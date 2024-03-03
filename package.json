@@ -1,0 +1,12 @@
+{
+  "name": "319sba",
+  "version": "1.0.0",
+  "description": "SBA319; a project showcasing using MongoDB,Express and Mongoose to build a RESTful API.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
