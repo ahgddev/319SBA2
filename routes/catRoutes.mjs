@@ -23,4 +23,20 @@ router
     res.send(`Database Seeded`);
   });
 
+  router
+  .route("/")
+  .get(async (req, res) => {
+
+  })
+  .post(async (req, res) => {
+    try {
+      let newCat = new Cats(req.body);
+      await newCat.save();
+  
+      res.send("The cat named " + req.body.name + " was added.");
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ msg: 'Server Error' });
+    }
+  });
 export default router
