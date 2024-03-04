@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Model } from "mongoose";
 
 // Define the schema for cats.
 const catSchema = new mongoose.Schema({
@@ -55,5 +55,10 @@ const catSchema = new mongoose.Schema({
     default: Date.now,
   },
 });
+
+//Searching up a cat by name is definately a common thing to do, so cat names are indexed.
+catSchema.index({ name: 1 });
+//Looking up which animals are sick is important for a shelter. So this will be indexed too. These values will (hopefully!) not change enough to make indexing this value slow things down.
+catSchema.index({ "health_notes.is_sick": 1 });
 
 export default mongoose.model("Cat", catSchema);
