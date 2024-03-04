@@ -82,8 +82,8 @@ router.route("/penspace").get(async (req, res) => {
 });
 
 //Intentional Bad routes that would cause the database validation to reject
-router.route("/badname").get(async (req, res) => {
-    //Names can contain spaces and the following special characters: -,&,@,~,!
+router.route("/badpen").get(async (req, res) => {
+    //Cats cannot be added to pens outside of 1 - 15.
     //Cori== isn't valid because names can't contain =
     try {
         let newCat = new Cats( {
@@ -91,7 +91,7 @@ router.route("/badname").get(async (req, res) => {
             "breed": "American Shorthair",
             "type": "cat",
             "age": 2,
-            "pen_number": 6,
+            "pen_number": 21,
             "medication": ["none"],
             "allergies": ["none"],
             "pen_mate": [""],

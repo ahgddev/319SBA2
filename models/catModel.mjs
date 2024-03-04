@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 const catSchema = new mongoose.Schema({
   name: {
     type: String,
+    'unique': true
   },
   breed: {
     type: String,
