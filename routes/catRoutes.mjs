@@ -6,7 +6,7 @@ import pkg from "../utilities/data.js";
 
 dotenv.config();
 const { dogs, cats, others } = pkg;
-await mongoose.connect(process.env.CAT_URL);
+await mongoose.connect(process.env.ATLAS_URL);
 
 const router = express.Router();
 
@@ -72,6 +72,7 @@ router.route("/penspace").get(async (req, res) => {
 //Intentional Bad routes that would cause the database validation to reject
 router.route("/badname").get(async (req, res) => {
     //Names can contain spaces and the following special characters: -,&,@,~,!
+    //Cori== isn't valid because names can't contain =
     try {
         let newCat = new Cats( {
             "name": "Cori==",
@@ -89,7 +90,7 @@ router.route("/badname").get(async (req, res) => {
             }
         });
         await newCat.save();
-        res.send("The cat named " + req.body.name + " was added.");
+        res.send("OK")
       } catch (err) {
         res.status(500).json({ msg: "Error:" + err });
       }
