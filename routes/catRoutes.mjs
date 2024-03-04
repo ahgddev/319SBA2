@@ -56,7 +56,7 @@ router.route("/alphabetical").get(async (req, res) => {
 });
 
 router.route("/penspace").get(async (req, res) => {
-  //Display information regarding all pens. This shelter can only house cats in pens 1 - 15.
+  //Display information regarding all cat pens. This shelter can only house cats in pens 1 - 15.
   let pens = await Cats.aggregate([
     {
       $group: { _id: "$pen_number", count: { $sum: 1 } },
@@ -66,9 +66,34 @@ router.route("/penspace").get(async (req, res) => {
     },
     { $sort : { pen_number : 1 } }
   ]);
-  console.log(pens);
   res.send(pens);
 });
+
+//Intentional Bad routes that would cause the database validation to reject
+router.route("/badname").get(async (req, res) => {
+    //Names can contain spaces and the following special characters: -,&,@,~,!
+    try {
+        let newCat = new Cats( {
+            "name": "Cori==",
+            "breed": "American Shorthair",
+            "type": "cat",
+            "age": 2,
+            "pen_number": 6,
+            "medication": ["none"],
+            "allergies": ["none"],
+            "pen_mate": [""],
+            "health_notes": {
+                "supplements": ["A","B"],
+                "is_sick": false,
+                "progress": "not sick"
+            }
+        });
+        await newCat.save();
+        res.send("The cat named " + req.body.name + " was added.");
+      } catch (err) {
+        res.status(500).json({ msg: "Error:" + err });
+      }
+  });
 
 router
   .route("/:id")
