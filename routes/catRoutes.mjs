@@ -12,16 +12,8 @@ const router = express.Router();
 
 //Helper function that will check pens when editing or adding cats.
 async function checkIfPenIsFull(penNumber) {
-  let pens = await Cats.aggregate([
-    {
-      $group: { _id: penNumber, count: { $sum: 1 } },
-    },
-    {
-      $project: { _id: 0, pen_number: "$_id", occupants: "$count" },
-    },
-    { $sort: { pen_number: 1 } },
-  ]);
-  if (pens[0].occupants >= 2) {
+  let pens = await Cats.find({pen_number: penNumber}, "pen_number").exec();
+  if (pens.length >= 2) {
     return true;
   }
   return false;
