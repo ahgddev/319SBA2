@@ -11,24 +11,26 @@ await mongoose.connect(process.env.ATLAS_URL);
 const router = express.Router();
 
 //Helper function that will check pens when editing or adding cats.
-async function penCheck(penNumber) {
-    let pens = await Cats.aggregate([
-        {
-          $group: { _id: penNumber, count: { $sum: 1 } },
-        },
-        {
-          $project: { _id: 0, pen_number: "$_id", occupants: "$count" },
-        },
-        { $sort : { pen_number : 1 } }
-      ]);
-    return pens
+async function checkIfPenIsFull(penNumber) {
+  let pens = await Cats.aggregate([
+    {
+      $group: { _id: penNumber, count: { $sum: 1 } },
+    },
+    {
+      $project: { _id: 0, pen_number: "$_id", occupants: "$count" },
+    },
+    { $sort: { pen_number: 1 } },
+  ]);
+  if (pens[0].occupants >= 2) {
+    return true;
+  }
+  return false;
 }
 
 //Add basic database data for cats
 router.route("/seed").get(async (req, res) => {
   await Cats.deleteMany({});
-    await Cats.insertMany(cats);
-
+  await Cats.insertMany(cats);
 
   res.send(`Database Seeded`);
 });
@@ -44,11 +46,14 @@ router
   .post(async (req, res) => {
     try {
       let newCat = new Cats(req.body);
-      await newCat.save();
-      console.log(req.body)
+      if (await checkIfPenIsFull(req.body.pen_number)) {
+        throw Error("This pen is full. Choose another.");
+      } else {
+        await newCat.save();
+      }
       res.send("The cat named " + req.body.name + " was added.");
     } catch (err) {
-      res.status(500).json({ msg: "Error:" + err });
+      res.status(500).json({ msg: "" + err });
     }
   });
 
@@ -76,37 +81,37 @@ router.route("/penspace").get(async (req, res) => {
     {
       $project: { _id: 0, pen_number: "$_id", occupants: "$count" },
     },
-    { $sort : { pen_number : 1 } }
+    { $sort: { pen_number: 1 } },
   ]);
   res.send(pens);
 });
 
 //Intentional Bad routes that would cause the database validation to reject
 router.route("/badpen").get(async (req, res) => {
-    //Cats cannot be added to pens outside of 1 - 15.
-    //Cori== isn't valid because names can't contain =
-    try {
-        let newCat = new Cats( {
-            "name": "Cori==",
-            "breed": "American Shorthair",
-            "type": "cat",
-            "age": 2,
-            "pen_number": 21,
-            "medication": ["none"],
-            "allergies": ["none"],
-            "pen_mate": [""],
-            "health_notes": {
-                "supplements": ["A","B"],
-                "is_sick": false,
-                "progress": "not sick"
-            }
-        });
-        await newCat.save();
-        res.send("OK")
-      } catch (err) {
-        res.status(500).json({ msg: "Error:" + err });
-      }
-  });
+  //Cats cannot be added to pens outside of 1 - 15.
+  //Cori== isn't valid because names can't contain =
+  try {
+    let newCat = new Cats({
+      name: "Cori==",
+      breed: "American Shorthair",
+      type: "cat",
+      age: 2,
+      pen_number: 21,
+      medication: ["none"],
+      allergies: ["none"],
+      pen_mate: [""],
+      health_notes: {
+        supplements: ["A", "B"],
+        is_sick: false,
+        progress: "not sick",
+      },
+    });
+    await newCat.save();
+    res.send("OK");
+  } catch (err) {
+    res.status(500).json({ msg: "Error:" + err });
+  }
+});
 
 router
   .route("/:id")
@@ -123,9 +128,7 @@ router
     //Delete a cat with this ID
     try {
       await Cats.findByIdAndDelete(req.params.id);
-      res.send(
-        "Cat's records deleted"
-      );
+      res.send("Cat's records deleted");
     } catch (err) {
       res.status(500).json({ msg: "Error! Does that ID exist? Error:" + err });
     }
