@@ -56,7 +56,7 @@ router.route("/alphabetical").get(async (req, res) => {
 });
 
 router.route("/penspace").get(async (req, res) => {
-  //Display information regarding all pens This shelter can only house cats in pens 1 - 15.
+  //Display information regarding all pens. This shelter can only house cats in pens 1 - 15.
   let pens = await Cats.aggregate([
     {
       $group: { _id: "$pen_number", count: { $sum: 1 } },
@@ -64,6 +64,7 @@ router.route("/penspace").get(async (req, res) => {
     {
       $project: { _id: 0, pen_number: "$_id", occupants: "$count" },
     },
+    { $sort : { pen_number : 1 } }
   ]);
   console.log(pens);
   res.send(pens);
