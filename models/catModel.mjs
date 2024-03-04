@@ -1,53 +1,44 @@
-import mongoose, { Model } from "mongoose";
+import mongoose from "mongoose";
 
 // Define the schema for cats.
 const catSchema = new mongoose.Schema({
   name: {
-    type: "String",
-    required: true,
+    type: String,
   },
   breed: {
-    type: "String",
-    required: true,
+    type: String,
   },
   type: {
     type: String,
-    enum: ["cat"],
   },
   age: {
     type: Number,
-    max: 20,
-    message: "The year must be lower than 20.",
-    required: true,
   },
   pen_number: {
-    type: "Number",
+    type: Number,
   },
   medication: {
-    type: ["String"],
+    type: [String],
   },
   allergies: {
-    type: ["String"],
+    type: [String],
   },
-  pen_mate: [{ type: String }],
+  pen_mate: {type: [String]},
   health_notes: {
     supplements: {
-      type: ["String"],
-      required: true,
+      type: [String],
     },
     is_sick: {
-      type: "Boolean",
+      type: Boolean,
     },
     diagnosis: {
-      type: "String",
+      type: String,
     },
     progress: {
       type: String,
-      enum: ["not sick", "investigating", "healing", "healed"],
-      message: "{VALUE} can't be a progress value!",
     },
     details: {
-      type: ["String"],
+      type: [String],
     },
   },
   last_updated: {

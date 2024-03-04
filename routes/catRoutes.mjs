@@ -11,12 +11,24 @@ await mongoose.connect(process.env.ATLAS_URL);
 const router = express.Router();
 
 //Helper function that will check pens when editing or adding cats.
-function penCheck(penNumber) {}
+async function penCheck(penNumber) {
+    let pens = await Cats.aggregate([
+        {
+          $group: { _id: penNumber, count: { $sum: 1 } },
+        },
+        {
+          $project: { _id: 0, pen_number: "$_id", occupants: "$count" },
+        },
+        { $sort : { pen_number : 1 } }
+      ]);
+    return pens
+}
 
 //Add basic database data for cats
 router.route("/seed").get(async (req, res) => {
   await Cats.deleteMany({});
-  await Cats.insertMany(cats);
+    await Cats.insertMany(cats);
+
 
   res.send(`Database Seeded`);
 });
@@ -33,7 +45,7 @@ router
     try {
       let newCat = new Cats(req.body);
       await newCat.save();
-
+      console.log(req.body)
       res.send("The cat named " + req.body.name + " was added.");
     } catch (err) {
       res.status(500).json({ msg: "Error:" + err });
@@ -111,13 +123,8 @@ router
     //Delete a cat with this ID
     try {
       await Cats.findByIdAndDelete(req.params.id);
-
       res.send(
-        "The cat named " +
-          req.body.name +
-          " was deleted. Bye " +
-          req.body.name +
-          "!"
+        "Cat's records deleted"
       );
     } catch (err) {
       res.status(500).json({ msg: "Error! Does that ID exist? Error:" + err });

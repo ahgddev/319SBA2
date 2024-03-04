@@ -104,7 +104,7 @@ let cats = [{
     pen_number: 4,
     medication: ["none"],
     allergies: ["none"],
-    pen_mate: ["Lily"],
+    pen_mate: [""],
     health_notes: {
         supplements: ["none"],
         is_sick: false,
