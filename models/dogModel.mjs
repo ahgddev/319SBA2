@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
 
-// Define the schema for cats.
-const catSchema = new mongoose.Schema({
+// Define the schema for dogs.
+const dogSchema = new mongoose.Schema({
   name: {
     type: String,
-    unique: true,
+    'unique': true
   },
   breed: {
     type: String,
@@ -24,7 +24,7 @@ const catSchema = new mongoose.Schema({
   allergies: {
     type: [String],
   },
-  pen_mate: { type: [String] },
+  pen_mate: {type: [String]},
   health_notes: {
     supplements: {
       type: [String],
@@ -48,9 +48,9 @@ const catSchema = new mongoose.Schema({
   },
 });
 
-//Searching up a cat by name is definately a common thing to do, so cat names are indexed.
-catSchema.index({ name: 1 });
+//Searching up a dog by name is definately a common thing to do, so dog names are indexed.
+dogSchema.index({ name: 1 });
 //Looking up which animals are sick is important for a shelter. They'll want to be able to easily update and check on sick animals. So this will be indexed too. These values will (hopefully!) not change enough to make indexing this value slow things down.
-catSchema.index({ "health_notes.is_sick": 1 });
+dogSchema.index({ "health_notes.is_sick": 1 });
 
-export default mongoose.model("Cat", catSchema);
+export default mongoose.model("Dog", dogSchema);
