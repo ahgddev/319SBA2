@@ -10,10 +10,13 @@ await mongoose.connect(process.env.CAT_URL);
 
 const router = express.Router();
 
+//Helper function that will check pens when editing or adding cats.
+function penCheck(penNumber) {}
+
 //Add basic database data for cats
 router.route("/seed").get(async (req, res) => {
   await Cats.deleteMany({});
-  await Cats.create(cats);
+  await Cats.insertMany(cats);
 
   res.send(`Database Seeded`);
 });
@@ -37,53 +40,62 @@ router
     }
   });
 
+router.route("/sick").get(async (req, res) => {
+  //get all sick or injured cats
+  let sickCats = await Cats.find(
+    { "health_notes.is_sick": true },
+    "name health_notes"
+  ).exec();
+  res.json(sickCats);
+});
+
+router.route("/alphabetical").get(async (req, res) => {
+  //get all cats in alphabetical order, return only their names
+  let alphaCats = await Cats.find({}, "name").sort({ name: 1 });
+  res.json(alphaCats);
+});
+
+router.route("/penspace").get(async (req, res) => {
+  //get all pens that either have only 1 cat inside or no cats inside. This shelter can only house cats in pens 1 - 15.
+});
+
 router
   .route("/:id")
   .get(async (req, res) => {
     //Get a cat with this ID
     try {
-        let foundCat = await Cats.findById(req.params.id);
-        res.send("Cat found: " + JSON.stringify(foundCat));
-      } catch (err) {
-        res.status(500).json({ msg: "Error:" + err });
-      }
+      let foundCat = await Cats.findById(req.params.id);
+      res.send("Cat found: " + JSON.stringify(foundCat));
+    } catch (err) {
+      res.status(500).json({ msg: "Error:" + err });
+    }
   })
   .delete(async (req, res) => {
     //Delete a cat with this ID
     try {
-        await Cats.findByIdAndDelete(
-          req.params.id
-        );
-    
-        res.send("The cat named " + req.body.name + " was deleted. Bye " + req.body.name + "!");
-      } catch (err) {
-        res.status(500).json({ msg: "Error! Does that ID exist? Error:" + err });
+      await Cats.findByIdAndDelete(req.params.id);
+
+      res.send(
+        "The cat named " +
+          req.body.name +
+          " was deleted. Bye " +
+          req.body.name +
+          "!"
+      );
+    } catch (err) {
+      res.status(500).json({ msg: "Error! Does that ID exist? Error:" + err });
     }
-})
+  })
   .patch(async (req, res) => {
     //Update a cat
     try {
-        const updatedCat = await Cats.findByIdAndUpdate(
-          req.params.id,
-          req.body,
-          { new: true }
-        );
-    
-        res.send("The cat named " + req.body.name + " was updated.");
-      } catch (err) {
-        res.status(500).json({ msg: "Error! Does that ID exist? Error:" + err });
-      }
+      const updatedCat = await Cats.findByIdAndUpdate(req.params.id, req.body, {
+        new: true,
+      });
+      res.send("The cat named " + req.body.name + " was updated.");
+    } catch (err) {
+      res.status(500).json({ msg: "Error! Does that ID exist? Error:" + err });
+    }
   });
 
-router.route("/sick").get(async (req, res) => {
-  //get all sick or injured cats
-});
-
-router.route("/alphabetical").get(async (req, res) => {
-    //get all cats in alphabetical order
-  });
-
-router.route("/penspace").get(async (req, res) => {
-    //get all pens that either have only 1 cat inside or no cats inside. This shelter can only house cats in pens 1 - 15.
-  });
 export default router;

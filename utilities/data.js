@@ -1,6 +1,6 @@
-// import {  } from "mongoose"
 
 //Load up the database with basic information
+//Dog seed info
 let dogs = [{
     name: "Rover",
     breed: "Golden Retriever",
@@ -95,6 +95,7 @@ let dogs = [{
     last_updated: new Date()
 }]
 
+//Cat seed info
 let cats = [{
     name: "Lico Lico",
     breed: "Calico",
@@ -194,6 +195,7 @@ let cats = [{
     last_updated: new Date()
 }]
 
+//Exotic seed info
 let others = [{
     name: "Toober",
     breed: "standard",
