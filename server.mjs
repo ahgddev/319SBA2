@@ -16,8 +16,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(".", "src")));
 
 //Routing
-app.use("/dogs", dogRoutes);
 app.use("/cats", catRoutes);
+app.use("/dogs", dogRoutes);
 app.use("/exotics", exoticRoutes);
 
 //Server listening
