@@ -10,7 +10,7 @@ import pkg from "../utilities/data.js";
 
 dotenv.config();
 const {dogs, cats, others} = pkg;
-await mongoose.connect(process.env.ATLAS_URL);
+await mongoose.connect(process.env.CAT_URL);
 
 const router = express.Router();
 
